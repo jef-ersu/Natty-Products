@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 import mysql.connector
+from datetime import datetime
 
 # Conexão com o banco de dados MySQL
 db = mysql.connector.connect(
@@ -10,6 +11,8 @@ db = mysql.connector.connect(
     database="pro_natural"  # Nome do banco de dados
 )
 cursor = db.cursor()
+
+
 
 # Função para gerenciar o estoque
 def gerenciar_estoque():
@@ -58,7 +61,6 @@ def gerenciar_estoque():
 
     def adicionar_novo_estoque():
         def salvar_novo_estoque():
-            # Dados do novo estoque
             estoque_local = entry_estoque_local.get()
             produto_id = entry_produto_id.get()
             quantidade = entry_quantidade.get()
@@ -68,7 +70,6 @@ def gerenciar_estoque():
                 return
 
             try:
-                # Verificar se o produto já existe no estoque local
                 cursor.execute(
                     "SELECT * FROM estoque WHERE produto_id = %s AND estoque_local_id = %s",
                     (produto_id, estoque_local)
@@ -76,13 +77,11 @@ def gerenciar_estoque():
                 resultado = cursor.fetchone()
 
                 if resultado:
-                    # Produto já existe no estoque, então só atualiza a quantidade
                     cursor.execute(
                         "UPDATE estoque SET quantidade = quantidade + %s WHERE produto_id = %s AND estoque_local_id = %s",
                         (quantidade, produto_id, estoque_local)
                     )
                 else:
-                    # Produto não existe no estoque, então insere um novo registro
                     cursor.execute(
                         "INSERT INTO estoque (produto_id, estoque_local_id, quantidade) VALUES (%s, %s, %s)",
                         (produto_id, estoque_local, quantidade)
@@ -121,7 +120,6 @@ def gerenciar_estoque():
     frame_top = tk.Frame(janela_estoque, bg="#F0F0F0")
     frame_top.pack(pady=20, padx=20, fill="x")
 
-    # Labels e entradas no grid
     tk.Label(frame_top, text="Nome:", font=("Arial", 12), anchor="w").grid(row=0, column=0, padx=10, pady=5, sticky="w")
     entry_nome = tk.Entry(frame_top, font=("Arial", 12))
     entry_nome.grid(row=0, column=1, padx=10, pady=5, sticky="ew")
@@ -138,7 +136,6 @@ def gerenciar_estoque():
     entry_preco_venda = tk.Entry(frame_top, font=("Arial", 12))
     entry_preco_venda.grid(row=3, column=1, padx=10, pady=5, sticky="ew")
 
-    
     tk.Button(frame_top, text="Adicionar Produto", command=adicionar_produto, font=("Arial", 12), bg="#4CAF50", fg="white").grid(row=4, column=0, columnspan=2, pady=20)
     tk.Button(frame_top, text="Adicionar Produto ao Estoque", command=adicionar_novo_estoque, font=("Arial", 12), bg="#2196F3", fg="white").grid(row=5, column=0, columnspan=2, pady=20)
     
@@ -168,22 +165,35 @@ def realizar_venda():
             return
         
         try:
-            cursor.execute("SELECT quantidade FROM estoque WHERE produto_id = %s", (produto_id,))
-            estoque_disponivel = cursor.fetchone()
+            cursor.execute("SELECT preco_venda FROM produtos WHERE id_produto = %s", (produto_id,))
+            produto = cursor.fetchone()
 
-            if estoque_disponivel and int(estoque_disponivel[0]) >= int(quantidade):
+            if produto:
+                preco_venda = produto[0]
+                total = preco_venda * int(quantidade)
+                data_venda = datetime.now()
+
+                # Registra a venda no histórico
+                cursor.execute(
+                    "INSERT INTO historico_vendas (produto_id, quantidade, data_venda, preco_venda, total) VALUES (%s, %s, %s, %s, %s)",
+                    (produto_id, quantidade, data_venda, preco_venda, total)
+                )
+                db.commit()
+
+                # Atualiza o estoque após a venda
                 cursor.execute(
                     "UPDATE estoque SET quantidade = quantidade - %s WHERE produto_id = %s",
                     (quantidade, produto_id)
                 )
                 db.commit()
-                messagebox.showinfo("Sucesso", "Venda realizada com sucesso!")
+
+                messagebox.showinfo("Sucesso", f"Venda realizada com sucesso! Total: R${total:.2f}")
                 janela_venda.destroy()
             else:
-                messagebox.showerror("Erro", "Estoque insuficiente para realizar a venda.")
+                messagebox.showerror("Erro", "Produto não encontrado.")
         except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao realizar venda: {e}")
-
+            messagebox.showerror("Erro", f"Erro ao realizar a venda: {e}")
+    
     janela_venda = tk.Toplevel()
     janela_venda.title("Realizar Venda")
     janela_venda.geometry("400x300")
@@ -196,15 +206,15 @@ def realizar_venda():
     entry_quantidade = tk.Entry(janela_venda, font=("Arial", 12))
     entry_quantidade.pack(pady=5)
 
-    tk.Button(janela_venda, text="Realizar Venda", command=vender_produto, font=("Arial", 12), bg="#4CAF50", fg="white").pack(pady=20)
+    tk.Button(janela_venda, text="Vender", command=vender_produto, font=("Arial", 12), bg="#4CAF50", fg="white").pack(pady=20)
 
-# Interface principal
+# Criar a interface principal
 root = tk.Tk()
-root.title("Sistema de Gerenciamento")
-root.geometry("300x200")
-root.config(bg="#E0E0E0")
+root.title("Sistema de Gestão de Produtos Naturais")
+root.geometry("400x250")
 
-tk.Button(root, text="Gerenciar Estoque", command=gerenciar_estoque, font=("Arial", 12), bg="#4CAF50", fg="white").pack(pady=20)
-tk.Button(root, text="Realizar Venda", command=realizar_venda, font=("Arial", 12), bg="#2196F3", fg="white").pack(pady=20)
+# Botões principais
+tk.Button(root, text="Gerenciar Estoque", command=gerenciar_estoque, font=("Arial", 12), bg="#2196F3", fg="white").pack(pady=20)
+tk.Button(root, text="Realizar Venda", command=realizar_venda, font=("Arial", 12), bg="#4CAF50", fg="white").pack(pady=10)
 
 root.mainloop()
