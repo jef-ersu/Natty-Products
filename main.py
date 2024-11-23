@@ -5,9 +5,9 @@ import mysql.connector
 # Conexão com o banco de dados MySQL
 db = mysql.connector.connect(
     host="localhost",
-    user="",  # Substitua pelo seu usuário MySQL
-    password="",  # Substitua pela sua senha MySQL
-    database=""  # Nome do banco de dados
+    user="root",  # Substitua pelo seu usuário MySQL
+    password="0141",  # Substitua pela sua senha MySQL
+    database="pro_natural"  # Nome do banco de dados
 )
 cursor = db.cursor()
 
@@ -117,24 +117,27 @@ def gerenciar_estoque():
     janela_estoque.geometry("800x500")
     janela_estoque.config(bg="#F0F0F0")
 
+    # Frame de entrada de dados
     frame_top = tk.Frame(janela_estoque, bg="#F0F0F0")
-    frame_top.pack(pady=20)
-    
-    tk.Label(frame_top, text="Nome:", font=("Arial", 12)).grid(row=0, column=0, padx=10, pady=10)
+    frame_top.pack(pady=20, padx=20, fill="x")
+
+    # Labels e entradas no grid
+    tk.Label(frame_top, text="Nome:", font=("Arial", 12), anchor="w").grid(row=0, column=0, padx=10, pady=5, sticky="w")
     entry_nome = tk.Entry(frame_top, font=("Arial", 12))
-    entry_nome.grid(row=0, column=1, padx=10, pady=10)
-    
-    tk.Label(frame_top, text="Descrição:", font=("Arial", 12)).grid(row=1, column=0, padx=10, pady=10)
+    entry_nome.grid(row=0, column=1, padx=10, pady=5, sticky="ew")
+
+    tk.Label(frame_top, text="Descrição:", font=("Arial", 12), anchor="w").grid(row=1, column=0, padx=10, pady=5, sticky="w")
     entry_descricao = tk.Entry(frame_top, font=("Arial", 12))
-    entry_descricao.grid(row=1, column=1, padx=10, pady=10)
-    
-    tk.Label(frame_top, text="Preço de Custo:", font=("Arial", 12)).grid(row=2, column=0, padx=10, pady=10)
+    entry_descricao.grid(row=1, column=1, padx=10, pady=5, sticky="ew")
+
+    tk.Label(frame_top, text="Preço de Custo:", font=("Arial", 12), anchor="w").grid(row=2, column=0, padx=10, pady=5, sticky="w")
     entry_preco_custo = tk.Entry(frame_top, font=("Arial", 12))
-    entry_preco_custo.grid(row=2, column=1, padx=10, pady=10)
-    
-    tk.Label(frame_top, text="Preço de Venda:", font=("Arial", 12)).grid(row=3, column=0, padx=10, pady=10)
+    entry_preco_custo.grid(row=2, column=1, padx=10, pady=5, sticky="ew")
+
+    tk.Label(frame_top, text="Preço de Venda:", font=("Arial", 12), anchor="w").grid(row=3, column=0, padx=10, pady=5, sticky="w")
     entry_preco_venda = tk.Entry(frame_top, font=("Arial", 12))
-    entry_preco_venda.grid(row=3, column=1, padx=10, pady=10)
+    entry_preco_venda.grid(row=3, column=1, padx=10, pady=5, sticky="ew")
+
     
     tk.Button(frame_top, text="Adicionar Produto", command=adicionar_produto, font=("Arial", 12), bg="#4CAF50", fg="white").grid(row=4, column=0, columnspan=2, pady=20)
     tk.Button(frame_top, text="Adicionar Produto ao Estoque", command=adicionar_novo_estoque, font=("Arial", 12), bg="#2196F3", fg="white").grid(row=5, column=0, columnspan=2, pady=20)
