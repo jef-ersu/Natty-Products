@@ -89,13 +89,13 @@ def gerenciar_estoque():
                     )
                 
                 db.commit()
-                messagebox.showinfo("Sucesso", "Novo estoque adicionado com sucesso!")
+                messagebox.showinfo("Sucesso", "Produto adicionado com sucesso!")
                 janela_adicionar_estoque.destroy()
             except Exception as e:
-                messagebox.showerror("Erro", f"Erro ao adicionar novo estoque: {e}")
+                messagebox.showerror("Erro", f"Erro ao adicionar ao estoque: {e}")
         
         janela_adicionar_estoque = tk.Toplevel()
-        janela_adicionar_estoque.title("Adicionar Novo Estoque")
+        janela_adicionar_estoque.title("Adicionar Produto ao Estoque")
         janela_adicionar_estoque.geometry("400x300")
 
         tk.Label(janela_adicionar_estoque, text="ID do Produto:", font=("Arial", 12)).pack(pady=5)
@@ -137,7 +137,7 @@ def gerenciar_estoque():
     entry_preco_venda.grid(row=3, column=1, padx=10, pady=10)
     
     tk.Button(frame_top, text="Adicionar Produto", command=adicionar_produto, font=("Arial", 12), bg="#4CAF50", fg="white").grid(row=4, column=0, columnspan=2, pady=20)
-    tk.Button(frame_top, text="Adicionar Novo Estoque", command=adicionar_novo_estoque, font=("Arial", 12), bg="#2196F3", fg="white").grid(row=5, column=0, columnspan=2, pady=20)
+    tk.Button(frame_top, text="Adicionar Produto ao Estoque", command=adicionar_novo_estoque, font=("Arial", 12), bg="#2196F3", fg="white").grid(row=5, column=0, columnspan=2, pady=20)
     
     frame_table = tk.Frame(janela_estoque)
     frame_table.pack(pady=20)
