@@ -1,0 +1,16 @@
+Eu não sei qual editor de codigos vcs irão usar
+acredito que o VScode
+para instalar os requisitos basta ir no terminal powershell
+e digitar o seguinte comando
+
+"pip install -r requirements.txt"
+
+por via das dúvidas o arquivo "main.py" deve estar
+no mesmo diretorio do "requirements.txt"
+
+se tudo der errado, (acredito que não)
+utilizem esses dois comandos 
+
+"pip install mysql-connector-python" --Conector do Banco de dados Mysql em python
+"pip install tkinter" --Lib Gráfica do satanás
+
