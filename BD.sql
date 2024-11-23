@@ -1,12 +1,7 @@
 -- Active: 1726617823787@@127.0.0.1@3306@pro_natural
 
-DROP DATABASE pro_natural;
-
-CREATE DATABASE pro_natural;
-
-
-use pro_natural;
-
+CREATE DATABASE; 
+#nome da data base para teste aqui!!!
 
 -- Tabela de produtos
 CREATE TABLE produtos (
@@ -131,6 +126,16 @@ CREATE TABLE vendas (
     FOREIGN KEY (produto_id) REFERENCES produtos(id_produto)
 );
 
+#Nova tabela!!!
+ CREATE TABLE IF NOT EXISTS historico_vendas (
+    id_venda INT AUTO_INCREMENT PRIMARY KEY,
+    produto_id INT,
+    quantidade INT,
+    data_venda DATETIME,
+    preco_venda DECIMAL(10, 2),
+    total DECIMAL(10, 2)
+);
 
 
+#Fiquei com preguiça de implementar uma função pra isso, basta inserir manualmente!
 INSERT INTO estoque_local(descricao,endereco) VALUES("Teste","Rua Teste");
