@@ -300,7 +300,7 @@ tk.Button(root, text="Gerenciar Estoque", command=gerenciar_estoque, font=("Aria
 tk.Button(root, text="Realizar Venda", command=realizar_venda, font=("Arial", 12), bg="#D1D1D1", fg="black").pack(pady=10)
 tk.Button(root, text="Relatórios de Vendas", command=gerar_relatorio_vendas, font=("Arial", 12), bg="#D1D1D1", fg="black").pack(pady=10)
 tk.Button(root, text="Exportar para CSV", command=exportar_relatorio, font=("Arial", 12), bg="#FF9800", fg="black").pack(pady=10)
-tk.Button(root, text="Verificar Estoque Baixo", command=verificar_estoque_baixo, font=("Arial", 12), bg="#FFC107", fg="black").pack(pady=10)
+tk.Button(root, text="Verificar Estoque Baixo", command=verificar_estoque_baixo, font=("Arial", 12), bg="#F44336", fg="black").pack(pady=10)
 
 
 root.mainloop()
