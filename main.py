@@ -3,6 +3,7 @@ from tkinter import ttk, messagebox
 import mysql.connector
 from datetime import datetime
 import csv
+from tkinter import ttk
 
 # Conexão com o banco de dados MySQL
 db = mysql.connector.connect(
@@ -197,7 +198,7 @@ def realizar_venda():
     
     janela_venda = tk.Toplevel()
     janela_venda.title("Realizar Venda")
-    janela_venda.geometry("400x300")
+    janela_venda.geometry("1024x600")
 
     tk.Label(janela_venda, text="ID do Produto:", font=("Arial", 12)).pack(pady=5)
     entry_produto_id = tk.Entry(janela_venda, font=("Arial", 12))
@@ -235,16 +236,21 @@ def gerar_relatorio_vendas():
     # Janela de Relatório de Vendas
     janela_relatorio = tk.Toplevel()
     janela_relatorio.title("Relatório de Vendas")
-    janela_relatorio.geometry("600x400")
+    janela_relatorio.geometry("1024x600")
+    try:
+        janela_relatorio.iconphoto(False, tk.PhotoImage(file="favicon-32x32.png"))  # Substitua "icone.png" pelo nome do arquivo
+    except:
+        print("Ícone não encontrado, continuando sem ícone.")
 
     tk.Label(janela_relatorio, text="Selecione o Período:", font=("Arial", 12)).pack(pady=10)
     
     # Combobox para selecionar o período
     combo_periodo = ttk.Combobox(janela_relatorio, values=["Diário", "Mensal", "Anual"], font=("Arial", 12))
-    combo_periodo.pack(pady=5)
+    combo_periodo.pack(pady=5, fill="x")
     combo_periodo.current(0)  # Define o valor padrão como "Diário"
 
-    tk.Button(janela_relatorio, text="Gerar Relatório", command=exibir_relatorio, font=("Arial", 12), bg="#4CAF50", fg="black").pack(pady=10)
+    botao_gerar = ttk.Button(janela_relatorio, text="Gerar Relatório", command=exibir_relatorio)
+    botao_gerar.pack(pady=10, fill="x") 
 
     # Frame para a tabela
     frame_table = tk.Frame(janela_relatorio)
@@ -288,19 +294,54 @@ def verificar_estoque_baixo():
         messagebox.showerror("Erro", f"Erro ao verificar estoque baixo: {e}")
 
 
+root = tk.Tk()
+
+# Configurações gerais
+root.title("Sistema de Gestão de Produtos Naturais")  # Título da janela
+root.geometry("1024x600")  # Tamanho da janela (ajustado para boa visualização)
+root.minsize(800, 500)  # Tamanho mínimo para redimensionamento
+root.config(bg="#EAEDED")  # Cor de fundo neutra e agradável
+
+# Ícone personalizado (adicione um arquivo de ícone na pasta do projeto)
+try:
+    root.iconphoto(False, tk.PhotoImage(file="favicon-32x32.png"))  # Substitua "icone.png" pelo nome do arquivo
+except:
+    print("Ícone não encontrado, continuando sem ícone.")
+
+# Adicionar espaçamento e margens gerais usando frames
+frame_header = tk.Frame(root, bg="#4c692d", height=80)
+frame_header.pack(fill="x")
+
+titulo = tk.Label(
+    frame_header,
+    text="Sistema de Gestão de Produtos Naturais",
+    font=("Arial", 20, "bold"),
+    bg="#4c692d",
+    fg="#ECF0F1"
+)
+titulo.pack(pady=20)
 
 # Criar a interface principal
-root = tk.Tk()
-root.title("Sistema de Gestão de Produtos Naturais")
-root.geometry("400x250")
-root.config(bg="#F5F5F5")
+frame_principal = tk.Frame(root, bg="#FFFFFF", padx=20, pady=20)
+frame_principal.pack(expand=True, fill="both")
 
-# Botões principais
-tk.Button(root, text="Gerenciar Estoque", command=gerenciar_estoque, font=("Arial", 12), bg="#D1D1D1", fg="black").pack(pady=20)
-tk.Button(root, text="Realizar Venda", command=realizar_venda, font=("Arial", 12), bg="#D1D1D1", fg="black").pack(pady=10)
-tk.Button(root, text="Relatórios de Vendas", command=gerar_relatorio_vendas, font=("Arial", 12), bg="#D1D1D1", fg="black").pack(pady=10)
-tk.Button(root, text="Exportar para CSV", command=exportar_relatorio, font=("Arial", 12), bg="#FF9800", fg="black").pack(pady=10)
-tk.Button(root, text="Verificar Estoque Baixo", command=verificar_estoque_baixo, font=("Arial", 12), bg="#F44336", fg="black").pack(pady=10)
+titulo = tk.Label(frame_principal, text="Sistema de Gestão", font=("Arial", 16, "bold"), bg="#FFFFFF", fg="#333333")
+titulo.pack(pady=10)
+
+botao_estoque = ttk.Button(frame_principal, text="Gerenciar Estoque", command=gerenciar_estoque)
+botao_estoque.pack(pady=10, fill="x")
+
+botao_venda = ttk.Button(frame_principal, text="Realizar Venda", command=realizar_venda)
+botao_venda.pack(pady=10, fill="x")
+
+botao_relatorio = ttk.Button(frame_principal, text="Relatórios de Vendas", command=gerar_relatorio_vendas)
+botao_relatorio.pack(pady=10, fill="x")
+
+botao_alerta = ttk.Button(frame_principal, text="Verificar Estoque Baixo", command=verificar_estoque_baixo)
+botao_alerta.pack(pady=10, fill="x")
+
+botao_exporta = ttk.Button(frame_principal, text="Exportar para CSV", command=exportar_relatorio)
+botao_exporta.pack(pady=10, fill="x")
 
 
 root.mainloop()
