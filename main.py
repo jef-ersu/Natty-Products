@@ -267,6 +267,27 @@ def exportar_relatorio():
             escritor.writerow(row)
     messagebox.showinfo("Sucesso", "Relatório exportado para relatorio_vendas.csv!")
 
+def verificar_estoque_baixo():
+    try:
+        cursor.execute("""
+            SELECT e.produto_id, p.nome, e.quantidade, e.nivel_minimo
+            FROM estoque e
+            JOIN produtos p ON e.produto_id = p.id_produto
+            WHERE e.quantidade < e.nivel_minimo
+        """)
+        resultados = cursor.fetchall()
+
+        if resultados:
+            alerta_texto = "Produtos com estoque baixo:\n"
+            for produto_id, nome, quantidade, nivel_minimo in resultados:
+                alerta_texto += f"ID: {produto_id}, Nome: {nome}, Estoque: {quantidade}, Nível Mínimo: {nivel_minimo}\n"
+            messagebox.showwarning("Alerta de Estoque Baixo", alerta_texto)
+        else:
+            messagebox.showinfo("Estoque OK", "Todos os produtos estão acima do nível mínimo.")
+    except Exception as e:
+        messagebox.showerror("Erro", f"Erro ao verificar estoque baixo: {e}")
+
+
 
 # Criar a interface principal
 root = tk.Tk()
@@ -279,6 +300,7 @@ tk.Button(root, text="Gerenciar Estoque", command=gerenciar_estoque, font=("Aria
 tk.Button(root, text="Realizar Venda", command=realizar_venda, font=("Arial", 12), bg="#D1D1D1", fg="black").pack(pady=10)
 tk.Button(root, text="Relatórios de Vendas", command=gerar_relatorio_vendas, font=("Arial", 12), bg="#D1D1D1", fg="black").pack(pady=10)
 tk.Button(root, text="Exportar para CSV", command=exportar_relatorio, font=("Arial", 12), bg="#FF9800", fg="black").pack(pady=10)
+tk.Button(root, text="Verificar Estoque Baixo", command=verificar_estoque_baixo, font=("Arial", 12), bg="#FFC107", fg="black").pack(pady=10)
 
 
 root.mainloop()
