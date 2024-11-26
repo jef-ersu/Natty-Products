@@ -139,3 +139,6 @@ CREATE TABLE vendas (
 
 #Fiquei com preguiça de implementar uma função pra isso, basta inserir manualmente!
 INSERT INTO estoque_local(descricao,endereco) VALUES("Teste","Rua Teste");
+
+#adicionando nivel minino ao estoque
+ALTER TABLE estoque ADD nivel_minimo INT DEFAULT 10;
