@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 import mysql.connector
 from datetime import datetime
+import csv
 
 # Conexão com o banco de dados MySQL
 db = mysql.connector.connect(
@@ -257,6 +258,14 @@ def gerar_relatorio_vendas():
     tree.heading("Total", text="Total")
     tree.pack(pady=10)
 
+def exportar_relatorio():
+    with open("relatorio_vendas.csv", "w", newline="") as arquivo:
+        escritor = csv.writer(arquivo)
+        escritor.writerow(["Produto ID", "Quantidade", "Data Venda", "Total"])
+        cursor.execute("SELECT produto_id, quantidade, data_venda, total FROM historico_vendas")
+        for row in cursor.fetchall():
+            escritor.writerow(row)
+    messagebox.showinfo("Sucesso", "Relatório exportado para relatorio_vendas.csv!")
 
 
 # Criar a interface principal
@@ -269,6 +278,7 @@ root.config(bg="#F5F5F5")
 tk.Button(root, text="Gerenciar Estoque", command=gerenciar_estoque, font=("Arial", 12), bg="#D1D1D1", fg="black").pack(pady=20)
 tk.Button(root, text="Realizar Venda", command=realizar_venda, font=("Arial", 12), bg="#D1D1D1", fg="black").pack(pady=10)
 tk.Button(root, text="Relatórios de Vendas", command=gerar_relatorio_vendas, font=("Arial", 12), bg="#D1D1D1", fg="black").pack(pady=10)
+tk.Button(root, text="Exportar para CSV", command=exportar_relatorio, font=("Arial", 12), bg="#FF9800", fg="black").pack(pady=10)
 
 
 root.mainloop()
