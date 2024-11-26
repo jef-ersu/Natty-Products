@@ -1,0 +1,112 @@
+Funções = adicionar_produto, adicionar_novo_estoque,
+remover_produto, listar_produtos, vender_produto, 
+exibir_relatorio, exportar_relatorio, verificar_estoque_baixo;
+
+
+
+1. adicionar_produto = adiciona produto a tabela produtos.
+command line:
+cursor.execute
+("INSERT INTO produtos (nome, descricao, preco_custo, preco_venda) VALUES (%s, %s, %s, %s)",
+(nome, descricao, preco_custo, preco_venda));
+
+
+2. adicionar_novo_estoque = adiciona produto ao estoque, "já criado no banco de dados", 
+obs: irei trocar o nome para "adicionar_produto_estoque".
+command line:
+cursor.execute(
+"INSERT INTO estoque (produto_id, estoque_local_id, quantidade) VALUES (%s, %s, %s)",
+(produto_id, estoque_local, quantidade));
+
+
+3. remover_produto = remove o produto da tabela produto e do estoque.
+command line:
+selecionado = tree.selection()[0] 
+produto_id = tree.item(selecionado)['values'][0]
+cursor.execute("DELETE FROM estoque WHERE produto_id = %s", (produto_id,))
+cursor.execute("DELETE FROM produtos WHERE id_produto = %s", (produto_id,))
+
+
+4. listar_produtos = lista os produtos da tabela produto, com o nome, preço de venda e etc.
+command line:
+for i in tree.get_children():
+            tree.delete(i)
+        cursor.execute("SELECT id_produto, nome, descricao, preco_custo, preco_venda FROM produtos")
+        for row in cursor.fetchall():
+            tree.insert("", "end", values=row);
+
+
+5. vender_produto = vende o produto da tabela estoque, e adiciona a venda ao historico_vendas.
+command line:
+# Registra a venda no histórico
+cursor.execute(
+"INSERT INTO historico_vendas (produto_id, quantidade, data_venda, preco_venda, total) VALUES (%s, %s, %s, %s, %s)",
+(produto_id, quantidade, data_venda, preco_venda, total))
+db.commit();
+
+# Atualiza o estoque após a venda
+cursor.execute(
+"UPDATE estoque SET quantidade = quantidade - %s WHERE produto_id = %s",
+(quantidade, produto_id))
+db.commit();
+
+
+6. exibir_relatorio = mostra as vendas Diárias, Mensais e Anuais "se houver".
+command line:
+periodo = combo_periodo.get()
+        query = ""
+        if periodo == "Diário":
+            query = "SELECT produto_id, quantidade, data_venda, total FROM historico_vendas WHERE DATE(data_venda) = CURDATE()"
+        elif periodo == "Mensal":
+            query = "SELECT produto_id, quantidade, data_venda, total FROM historico_vendas WHERE MONTH(data_venda) = MONTH(CURDATE()) AND YEAR(data_venda) = YEAR(CURDATE())"
+        elif periodo == "Anual":
+            query = "SELECT produto_id, quantidade, data_venda, total FROM historico_vendas WHERE YEAR(data_venda) = YEAR(CURDATE())"
+
+        # Limpa a tabela antes de exibir os novos resultados
+        for item in tree.get_children():
+            tree.delete(item)
+
+        # Preenche a tabela com os resultados da consulta
+        try:
+            cursor.execute(query)
+            for row in cursor.fetchall():
+                tree.insert("", "end", values=row)
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao gerar relatório: {e}");
+
+
+7. exportar_relatorio = exporta o relatorio_vendas como um arquivo .csv, que significa
+"Valores separados por vírgula", pode ser editado no excel e converter pra pdf em sites ai.
+command line:
+import csv #importação nescessária
+with open("relatorio_vendas.csv", "w", newline="") as arquivo:
+        escritor = csv.writer(arquivo)
+        escritor.writerow(["Produto ID", "Quantidade", "Data Venda", "Total"])
+        cursor.execute("SELECT produto_id, quantidade, data_venda, total FROM historico_vendas")
+        for row in cursor.fetchall():
+            escritor.writerow(row)
+    messagebox.showinfo("Sucesso", "Relatório exportado para relatorio_vendas.csv!");
+
+
+8. verificar_estoque_baixo = o nome já diz, verifica se o estoque tá baixo.
+obs: tabela "nivel_minimo" adicionado ao estoque!
+command line:
+try:
+        cursor.execute("""
+            SELECT e.produto_id, p.nome, e.quantidade, e.nivel_minimo
+            FROM estoque e
+            JOIN produtos p ON e.produto_id = p.id_produto
+            WHERE e.quantidade < e.nivel_minimo #tabela nova com valor mínimo de "10"
+        """)
+        resultados = cursor.fetchall()
+
+        if resultados:
+            alerta_texto = "Produtos com estoque baixo:\n"
+            for produto_id, nome, quantidade, nivel_minimo in resultados:
+                alerta_texto += f"ID: {produto_id}, Nome: {nome}, Estoque: {quantidade}, Nível Mínimo: {nivel_minimo}\n"
+            messagebox.showwarning("Alerta de Estoque Baixo", alerta_texto)
+        else:
+            messagebox.showinfo("Estoque OK", "Todos os produtos estão acima do nível mínimo.")
+    except Exception as e:
+        messagebox.showerror("Erro", f"Erro ao verificar estoque baixo: {e}")
+
