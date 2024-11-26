@@ -9,8 +9,8 @@ from tkinter import ttk
 db = mysql.connector.connect(
     host="localhost",
     user="root",  # Substitua pelo seu usuário MySQL
-    password="0141",  # Substitua pela sua senha MySQL
-    database="pro_natural"  # Nome do banco de dados
+    password="",  # Substitua pela sua senha MySQL
+    database="pro_natutal"  # Nome do banco de dados
 )
 cursor = db.cursor()
 
@@ -97,8 +97,14 @@ def gerenciar_estoque():
         
         janela_adicionar_estoque = tk.Toplevel()
         janela_adicionar_estoque.title("Adicionar Produto ao Estoque")
-        janela_adicionar_estoque.geometry("400x300")
+        janela_adicionar_estoque.geometry("1024x600")
+        
+        try:
+            janela_adicionar_estoque.iconphoto(False, tk.PhotoImage(file="favicon-32x32.png"))  # Substitua "icone.png" pelo nome do arquivo
+        except:
+            print("Ícone não encontrado, continuando sem ícone.")
 
+        
         tk.Label(janela_adicionar_estoque, text="ID do Produto:", font=("Arial", 12)).pack(pady=5)
         entry_produto_id = tk.Entry(janela_adicionar_estoque, font=("Arial", 12))
         entry_produto_id.pack(pady=5)
@@ -111,50 +117,74 @@ def gerenciar_estoque():
         entry_quantidade = tk.Entry(janela_adicionar_estoque, font=("Arial", 12))
         entry_quantidade.pack(pady=5)
 
-        tk.Button(janela_adicionar_estoque, text="Salvar", command=salvar_novo_estoque, font=("Arial", 12), bg="#4CAF50", fg="black").pack(pady=20)
+        botao_salvar = ttk.Button(janela_adicionar_estoque, text="Salvar", command=salvar_novo_estoque)
+        botao_salvar.pack(pady=10, fill="x")
 
     janela_estoque = tk.Toplevel()
     janela_estoque.title("Gerenciamento de Estoque")
-    janela_estoque.geometry("800x500")
+    janela_estoque.geometry("1024x700")
     janela_estoque.config(bg="#F0F0F0")
-
-    # Frame de entrada de dados
-    frame_top = tk.Frame(janela_estoque, bg="#F0F0F0")
-    frame_top.pack(pady=20, padx=20, fill="x")
-
-    tk.Label(frame_top, text="Nome:", font=("Arial", 12), anchor="w").grid(row=0, column=0, padx=10, pady=5, sticky="w")
-    entry_nome = tk.Entry(frame_top, font=("Arial", 12))
-    entry_nome.grid(row=0, column=1, padx=10, pady=5, sticky="ew")
-
-    tk.Label(frame_top, text="Descrição:", font=("Arial", 12), anchor="w").grid(row=1, column=0, padx=10, pady=5, sticky="w")
-    entry_descricao = tk.Entry(frame_top, font=("Arial", 12))
-    entry_descricao.grid(row=1, column=1, padx=10, pady=5, sticky="ew")
-
-    tk.Label(frame_top, text="Preço de Custo:", font=("Arial", 12), anchor="w").grid(row=2, column=0, padx=10, pady=5, sticky="w")
-    entry_preco_custo = tk.Entry(frame_top, font=("Arial", 12))
-    entry_preco_custo.grid(row=2, column=1, padx=10, pady=5, sticky="ew")
-
-    tk.Label(frame_top, text="Preço de Venda:", font=("Arial", 12), anchor="w").grid(row=3, column=0, padx=10, pady=5, sticky="w")
-    entry_preco_venda = tk.Entry(frame_top, font=("Arial", 12))
-    entry_preco_venda.grid(row=3, column=1, padx=10, pady=5, sticky="ew")
-
-    tk.Button(frame_top, text="Adicionar Produto", command=adicionar_produto, font=("Arial", 12), bg="#D1D1D1", fg="black").grid(row=4, column=0, columnspan=2, pady=20)
-    tk.Button(frame_top, text="Adicionar Produto ao Estoque", command=adicionar_novo_estoque, font=("Arial", 12), bg="#D1D1D1", fg="black").grid(row=5, column=0, columnspan=2, pady=20)
     
-    frame_table = tk.Frame(janela_estoque)
-    frame_table.pack(pady=20)
-    
+    try:
+        janela_estoque.iconphoto(False, tk.PhotoImage(file="favicon-32x32.png"))  # Substitua "icone.png" pelo nome do arquivo
+    except:
+        print("Ícone não encontrado, continuando sem ícone.")
+
+
+    # Frame superior com campos de entrada
+    frame_top = ttk.Frame(janela_estoque, padding="20")
+    frame_top.pack(fill="x", pady=20, padx=20)
+
+    # Labels e Entradas com ttk
+    ttk.Label(frame_top, text="Nome:", font=("Arial", 12)).grid(row=0, column=0, sticky="w", padx=10, pady=5)
+    entry_nome = ttk.Entry(frame_top, font=("Arial", 12))
+    entry_nome.grid(row=0, column=1, sticky="ew", padx=10, pady=5)
+
+    ttk.Label(frame_top, text="Descrição:", font=("Arial", 12)).grid(row=1, column=0, sticky="w", padx=10, pady=5)
+    entry_descricao = ttk.Entry(frame_top, font=("Arial", 12))
+    entry_descricao.grid(row=1, column=1, sticky="ew", padx=10, pady=5)
+
+    ttk.Label(frame_top, text="Preço de Custo:", font=("Arial", 12)).grid(row=2, column=0, sticky="w", padx=10, pady=5)
+    entry_preco_custo = ttk.Entry(frame_top, font=("Arial", 12))
+    entry_preco_custo.grid(row=2, column=1, sticky="ew", padx=10, pady=5)
+
+    ttk.Label(frame_top, text="Preço de Venda:", font=("Arial", 12)).grid(row=3, column=0, sticky="w", padx=10, pady=5)
+    entry_preco_venda = ttk.Entry(frame_top, font=("Arial", 12))
+    entry_preco_venda.grid(row=3, column=1, sticky="ew", padx=10, pady=5)
+
+    # Botões com ttk
+    ttk.Button(frame_top, text="Adicionar Produto", command=adicionar_produto, style="TButton").grid(row=4, column=0, columnspan=2, pady=20)
+    ttk.Button(frame_top, text="Adicionar Produto ao Estoque", command=adicionar_novo_estoque, style="TButton").grid(row=5, column=0, columnspan=2, pady=20)
+
+    # Frame para a tabela (Treeview)
+    frame_table = ttk.Frame(janela_estoque, padding="20")
+    frame_table.pack(fill="x", pady=20)
+
+    # Treeview (Tabela) para exibir os produtos
     tree = ttk.Treeview(frame_table, columns=("ID", "Nome", "Descrição", "Custo", "Venda"), show="headings", height=8)
     tree.heading("ID", text="ID")
     tree.heading("Nome", text="Nome")
     tree.heading("Descrição", text="Descrição")
     tree.heading("Custo", text="Custo")
     tree.heading("Venda", text="Venda")
-    tree.pack(pady=10)
 
-    tk.Button(janela_estoque, text="Remover Produto", command=remover_produto, font=("Arial", 12), bg="#F44336", fg="black").pack(pady=10)
-    
+    # Ajustando a largura das colunas
+    tree.column("ID", width=50, anchor="center")
+    tree.column("Nome", width=150, anchor="w")
+    tree.column("Descrição", width=200, anchor="w")
+    tree.column("Custo", width=100, anchor="w")
+    tree.column("Venda", width=100, anchor="w")
+
+    tree.pack(pady=10, fill="x")
+
+    # Botão de Remover Produto
+    ttk.Button(janela_estoque, text="Remover Produto", command=remover_produto, style="TButton").pack(pady=10)
+
+    # Chamada para listar os produtos
     listar_produtos()
+
+    # Iniciar a janela principal
+    janela_estoque.mainloop()
 
 # Função para realizar a venda
 def realizar_venda():
@@ -199,6 +229,12 @@ def realizar_venda():
     janela_venda = tk.Toplevel()
     janela_venda.title("Realizar Venda")
     janela_venda.geometry("1024x600")
+    
+    try:
+        janela_venda.iconphoto(False, tk.PhotoImage(file="favicon-32x32.png"))  # Substitua "icone.png" pelo nome do arquivo
+    except:
+        print("Ícone não encontrado, continuando sem ícone.")
+    
 
     tk.Label(janela_venda, text="ID do Produto:", font=("Arial", 12)).pack(pady=5)
     entry_produto_id = tk.Entry(janela_venda, font=("Arial", 12))
@@ -208,8 +244,9 @@ def realizar_venda():
     entry_quantidade = tk.Entry(janela_venda, font=("Arial", 12))
     entry_quantidade.pack(pady=5)
 
-    tk.Button(janela_venda, text="Vender", command=vender_produto, font=("Arial", 12), bg="#4CAF50", fg="black").pack(pady=20)
-
+    botao_vender = ttk.Button(janela_venda, text="Vender", command=vender_produto)
+    botao_vender.pack(pady=10)
+    
 def gerar_relatorio_vendas():
     def exibir_relatorio():
         periodo = combo_periodo.get()
