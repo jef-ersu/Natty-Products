@@ -109,7 +109,7 @@ def gerenciar_estoque():
         entry_quantidade = tk.Entry(janela_adicionar_estoque, font=("Arial", 12))
         entry_quantidade.pack(pady=5)
 
-        tk.Button(janela_adicionar_estoque, text="Salvar", command=salvar_novo_estoque, font=("Arial", 12), bg="#4CAF50", fg="white").pack(pady=20)
+        tk.Button(janela_adicionar_estoque, text="Salvar", command=salvar_novo_estoque, font=("Arial", 12), bg="#4CAF50", fg="black").pack(pady=20)
 
     janela_estoque = tk.Toplevel()
     janela_estoque.title("Gerenciamento de Estoque")
@@ -136,8 +136,8 @@ def gerenciar_estoque():
     entry_preco_venda = tk.Entry(frame_top, font=("Arial", 12))
     entry_preco_venda.grid(row=3, column=1, padx=10, pady=5, sticky="ew")
 
-    tk.Button(frame_top, text="Adicionar Produto", command=adicionar_produto, font=("Arial", 12), bg="#4CAF50", fg="white").grid(row=4, column=0, columnspan=2, pady=20)
-    tk.Button(frame_top, text="Adicionar Produto ao Estoque", command=adicionar_novo_estoque, font=("Arial", 12), bg="#2196F3", fg="white").grid(row=5, column=0, columnspan=2, pady=20)
+    tk.Button(frame_top, text="Adicionar Produto", command=adicionar_produto, font=("Arial", 12), bg="#D1D1D1", fg="black").grid(row=4, column=0, columnspan=2, pady=20)
+    tk.Button(frame_top, text="Adicionar Produto ao Estoque", command=adicionar_novo_estoque, font=("Arial", 12), bg="#D1D1D1", fg="black").grid(row=5, column=0, columnspan=2, pady=20)
     
     frame_table = tk.Frame(janela_estoque)
     frame_table.pack(pady=20)
@@ -150,7 +150,7 @@ def gerenciar_estoque():
     tree.heading("Venda", text="Venda")
     tree.pack(pady=10)
 
-    tk.Button(janela_estoque, text="Remover Produto", command=remover_produto, font=("Arial", 12), bg="#F44336", fg="white").pack(pady=10)
+    tk.Button(janela_estoque, text="Remover Produto", command=remover_produto, font=("Arial", 12), bg="#F44336", fg="black").pack(pady=10)
     
     listar_produtos()
 
@@ -206,15 +206,69 @@ def realizar_venda():
     entry_quantidade = tk.Entry(janela_venda, font=("Arial", 12))
     entry_quantidade.pack(pady=5)
 
-    tk.Button(janela_venda, text="Vender", command=vender_produto, font=("Arial", 12), bg="#4CAF50", fg="white").pack(pady=20)
+    tk.Button(janela_venda, text="Vender", command=vender_produto, font=("Arial", 12), bg="#4CAF50", fg="black").pack(pady=20)
+
+def gerar_relatorio_vendas():
+    def exibir_relatorio():
+        periodo = combo_periodo.get()
+        query = ""
+        if periodo == "Diário":
+            query = "SELECT produto_id, quantidade, data_venda, total FROM historico_vendas WHERE DATE(data_venda) = CURDATE()"
+        elif periodo == "Mensal":
+            query = "SELECT produto_id, quantidade, data_venda, total FROM historico_vendas WHERE MONTH(data_venda) = MONTH(CURDATE()) AND YEAR(data_venda) = YEAR(CURDATE())"
+        elif periodo == "Anual":
+            query = "SELECT produto_id, quantidade, data_venda, total FROM historico_vendas WHERE YEAR(data_venda) = YEAR(CURDATE())"
+
+        # Limpa a tabela antes de exibir os novos resultados
+        for item in tree.get_children():
+            tree.delete(item)
+
+        # Preenche a tabela com os resultados da consulta
+        try:
+            cursor.execute(query)
+            for row in cursor.fetchall():
+                tree.insert("", "end", values=row)
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao gerar relatório: {e}")
+
+    # Janela de Relatório de Vendas
+    janela_relatorio = tk.Toplevel()
+    janela_relatorio.title("Relatório de Vendas")
+    janela_relatorio.geometry("600x400")
+
+    tk.Label(janela_relatorio, text="Selecione o Período:", font=("Arial", 12)).pack(pady=10)
+    
+    # Combobox para selecionar o período
+    combo_periodo = ttk.Combobox(janela_relatorio, values=["Diário", "Mensal", "Anual"], font=("Arial", 12))
+    combo_periodo.pack(pady=5)
+    combo_periodo.current(0)  # Define o valor padrão como "Diário"
+
+    tk.Button(janela_relatorio, text="Gerar Relatório", command=exibir_relatorio, font=("Arial", 12), bg="#4CAF50", fg="black").pack(pady=10)
+
+    # Frame para a tabela
+    frame_table = tk.Frame(janela_relatorio)
+    frame_table.pack(pady=10)
+
+    # Configuração da tabela
+    tree = ttk.Treeview(frame_table, columns=("Produto ID", "Quantidade", "Data Venda", "Total"), show="headings")
+    tree.heading("Produto ID", text="Produto ID")
+    tree.heading("Quantidade", text="Quantidade")
+    tree.heading("Data Venda", text="Data Venda")
+    tree.heading("Total", text="Total")
+    tree.pack(pady=10)
+
+
 
 # Criar a interface principal
 root = tk.Tk()
 root.title("Sistema de Gestão de Produtos Naturais")
 root.geometry("400x250")
+root.config(bg="#F5F5F5")
 
 # Botões principais
-tk.Button(root, text="Gerenciar Estoque", command=gerenciar_estoque, font=("Arial", 12), bg="#2196F3", fg="white").pack(pady=20)
-tk.Button(root, text="Realizar Venda", command=realizar_venda, font=("Arial", 12), bg="#4CAF50", fg="white").pack(pady=10)
+tk.Button(root, text="Gerenciar Estoque", command=gerenciar_estoque, font=("Arial", 12), bg="#D1D1D1", fg="black").pack(pady=20)
+tk.Button(root, text="Realizar Venda", command=realizar_venda, font=("Arial", 12), bg="#D1D1D1", fg="black").pack(pady=10)
+tk.Button(root, text="Relatórios de Vendas", command=gerar_relatorio_vendas, font=("Arial", 12), bg="#D1D1D1", fg="black").pack(pady=10)
+
 
 root.mainloop()
