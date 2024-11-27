@@ -1,8 +1,3 @@
--- Active: 1726617823787@@127.0.0.1@3306@pro_natural
-
-CREATE DATABASE; 
-#nome da data base para teste aqui!!!
-
 -- Tabela de produtos
 CREATE TABLE produtos (
   id_produto INT AUTO_INCREMENT PRIMARY KEY,
@@ -16,7 +11,8 @@ CREATE TABLE produtos (
   lote VARCHAR(50),
   categoria VARCHAR(50),
   imagem VARCHAR(255),
-  informacoes_nutricionais TEXT
+  informacoes_nutricionais TEXT,
+  FOREIGN KEY (fornecedor_id) REFERENCES fornecedores(id_fornecedor)
 );
 
 
@@ -68,8 +64,10 @@ CREATE TABLE pagamentos (
   forma_pagamento_id INT,
   valor DECIMAL(10,2),
   data_pagamento DATE,
+  id_venda int,
   FOREIGN KEY (pedido_id) REFERENCES pedidos(id_pedido),
-  FOREIGN KEY (forma_pagamento_id) REFERENCES formas_pagamento(id_forma_pagamento)
+  FOREIGN KEY (forma_pagamento_id) REFERENCES formas_pagamento(id_forma_pagamento),
+  FOREIGN KEY (id_venda) REFERENCES vendas(id_venda)
 );
 
 
@@ -86,6 +84,8 @@ CREATE TABLE notas_fiscais (
   pedido_id INT,
   data_emissao DATE,
   valor_total DECIMAL(10,2),
+  id_venda int,
+  FOREIGN KEY (id_venda) REFERENCES vendas(id_venda),
   FOREIGN KEY (pedido_id) REFERENCES pedidos(id_pedido)
 );
 
@@ -112,6 +112,7 @@ CREATE TABLE estoque (
   id_estoque INT AUTO_INCREMENT PRIMARY KEY,
   produto_id INT,
   estoque_local_id INT,
+  nivel_minimo INT DEFAULT 10,
   quantidade INT,
   FOREIGN KEY (produto_id) REFERENCES produtos(id_produto),
   FOREIGN KEY (estoque_local_id) REFERENCES estoque_local(id_estoque_local)
@@ -141,4 +142,3 @@ CREATE TABLE vendas (
 INSERT INTO estoque_local(descricao,endereco) VALUES("Teste","Rua Teste");
 
 #adicionando nivel minino ao estoque
-ALTER TABLE estoque ADD nivel_minimo INT DEFAULT 10;
