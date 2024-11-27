@@ -9,8 +9,8 @@ from tkinter import ttk
 db = mysql.connector.connect(
     host="localhost",
     user="root",  # Substitua pelo seu usuário MySQL
-    password="",  # Substitua pela sua senha MySQL
-    database="pro_natutal"  # Nome do banco de dados
+    password="0141",  # Substitua pela sua senha MySQL
+    database="pro_natural"  # Nome do banco de dados
 )
 cursor = db.cursor()
 
@@ -310,6 +310,16 @@ def exportar_relatorio():
             escritor.writerow(row)
     messagebox.showinfo("Sucesso", "Relatório exportado para relatorio_vendas.csv!")
 
+#nova função cópia da de cima
+def exportar_relatorio_estoque():
+    with open("relatorio_estoque.csv", "w", newline="") as arquivo:
+        escritor = csv.writer(arquivo)
+        escritor.writerow(["Produto ID", "Nome", "Quantidade"])
+        cursor.execute("SELECT e.produto_id, p.nome, e.quantidade FROM estoque e JOIN produtos p ON p.id_produto = e.produto_id")
+        for row in cursor.fetchall():
+            escritor.writerow(row)
+    messagebox.showinfo("Sucesso", "Relatório exportado para relatorio_estoque.csv!")
+
 def verificar_estoque_baixo():
     try:
         cursor.execute("""
@@ -377,8 +387,11 @@ botao_relatorio.pack(pady=10, fill="x")
 botao_alerta = ttk.Button(frame_principal, text="Verificar Estoque Baixo", command=verificar_estoque_baixo)
 botao_alerta.pack(pady=10, fill="x")
 
-botao_exporta = ttk.Button(frame_principal, text="Exportar para CSV", command=exportar_relatorio)
-botao_exporta.pack(pady=10, fill="x")
+botao_exporta_venda = ttk.Button(frame_principal, text="Exportar Relatório de Vendas CSV", command=exportar_relatorio)
+botao_exporta_venda.pack(pady=10, fill="x")
+
+botao_exporta_estoque = ttk.Button(frame_principal, text="Exportar Relatório do Estoque CSV", command=exportar_relatorio_estoque)
+botao_exporta_estoque.pack(pady=10, fill="x")
 
 
 root.mainloop()
