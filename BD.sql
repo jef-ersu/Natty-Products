@@ -141,4 +141,63 @@ CREATE TABLE vendas (
 #Fiquei com preguiça de implementar uma função pra isso, basta inserir manualmente!
 INSERT INTO estoque_local(descricao,endereco) VALUES("Teste","Rua Teste");
 
-#adicionando nivel minino ao estoque
+
+
+-- Funções, Procedures, triggers -->
+
+-- add produto 
+DELIMITER $$
+CREATE PROCEDURE AdicionarProduto(
+    IN p_nome VARCHAR(100),
+    IN p_descricao TEXT,
+    IN p_preco_custo DECIMAL(10, 2),
+    IN p_preco_venda DECIMAL(10, 2)
+)
+BEGIN
+    IF p_preco_venda <= p_preco_custo THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Preço de venda deve ser maior que o preço de custo.';
+    END IF;
+
+    INSERT INTO produtos (nome, descricao, preco_custo, preco_venda)
+    VALUES (p_nome, p_descricao, p_preco_custo, p_preco_venda);
+END $$
+DELIMITER ;
+
+-- gera relatorio estoque baixo
+DELIMITER $$
+CREATE PROCEDURE RelatorioEstoqueBaixo()
+BEGIN
+    SELECT p.nome, e.quantidade, e.nivel_minimo
+    FROM estoque e
+    JOIN produtos p ON e.produto_id = p.id_produto
+    WHERE e.quantidade < e.nivel_minimo;
+END $$
+DELIMITER ;
+
+-- registrar venda "Trigger"
+
+CREATE TRIGGER RegistrarVenda AFTER INSERT ON historico_vendas
+FOR EACH ROW
+BEGIN
+    INSERT INTO relatorio_diario (produto_id, quantidade, total, data)
+    VALUES (NEW.produto_id, NEW.quantidade, NEW.total, NEW.data_venda);
+END;
+
+-- estoque total
+
+DELIMITER $$
+CREATE FUNCTION EstoqueTotal(produto_id INT)
+RETURNS INT
+DETERMINISTIC
+BEGIN
+    DECLARE total INT;
+
+    SELECT SUM(quantidade)
+    INTO total
+    FROM estoque
+    WHERE produto_id = produto_id;
+
+    RETURN COALESCE(total, 0);
+END $$
+DELIMITER ;
