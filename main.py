@@ -8,8 +8,8 @@ from tkinter import ttk
 # Conexão com o banco de dados MySQL
 db = mysql.connector.connect(
     host="localhost",
-    user="root",  # Substitua pelo seu usuário MySQL
-    password="0141",  # Substitua pela sua senha MySQL
+    user="",  # Substitua pelo seu usuário MySQL
+    password="",  # Substitua pela sua senha MySQL
     database="pro_natural"  # Nome do banco de dados
 )
 cursor = db.cursor()
